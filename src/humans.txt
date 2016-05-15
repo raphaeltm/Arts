@@ -3,11 +3,11 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    Raphaël Titsworth-Morin -- Lead Potato -- @Raph_TM
 
 # THANKS
 
-    <name>
+    Potatoes
 
 # TECHNOLOGY COLOPHON
 
