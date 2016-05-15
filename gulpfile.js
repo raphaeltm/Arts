@@ -14,6 +14,10 @@ var runSequence = require('run-sequence');
 var pkg = require('./package.json');
 var dirs = pkg['h5bp-configs'].directories;
 
+var serve = require('gulp-serve');
+var open = require('gulp-open');
+
+
 // ---------------------------------------------------------------------
 // | Helper tasks                                                      |
 // ---------------------------------------------------------------------
@@ -149,6 +153,16 @@ gulp.task('lint:js', function () {
       .pipe(plugins.jshint.reporter('fail'));
 });
 
+gulp.task('serve:serve', serve({
+    root: ['src'],
+    port: 9000
+}));
+
+gulp.task('serve:open', function(){
+  gulp.src(__filename)
+  .pipe(open({uri: 'http://localhost:9000'}));
+});
+
 
 // ---------------------------------------------------------------------
 // | Main tasks                                                        |
@@ -167,6 +181,10 @@ gulp.task('build', function (done) {
         ['clean', 'lint:js'],
         'copy',
     done);
+});
+
+gulp.task('serve', function(done){
+    runSequence('serve:serve', 'serve:open', done)
 });
 
 gulp.task('default', ['build']);
