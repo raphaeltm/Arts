@@ -1,4 +1,4 @@
-# [HTML5 Boilerplate](https://html5boilerplate.com)
+# [Art Potato](https://arts.raphaeltm.com)
 
 ## Something, something, the arts are important to me.
 
