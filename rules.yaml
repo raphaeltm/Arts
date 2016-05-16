@@ -16,6 +16,7 @@ schema:
             type: string
         constraint: auth.uid == $user
         additionalProperties: false
+      indexOn: [last]
     artIs:
       $user:
         properties:
@@ -37,6 +38,8 @@ schema:
           uid:
             type: string
             constraint: next.val().length <= 140 && next.val() === auth.uid
+          timestamp:
+            type: string
         constraint: next.exists() && !prev.exists()
         additionalProperties: false
   additionalProperties: false

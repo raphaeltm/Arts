@@ -57,7 +57,7 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         $rootScope.Person = Person;
         Person.$loaded().then(function () {
             if (!Person.name) {
-                $rootScope.Display.getName = true;
+                $rootScope.Display.getBoth = true;
             }
         });
 

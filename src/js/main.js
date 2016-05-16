@@ -4,10 +4,33 @@ var Clicks = [];
 var AuthData = null;
 var Person = null;
 var Art = null;
+var Online = [];
 
 var Mode = 'web';
 
 var CurrentText = null;
+
+/**
+ * Set the last edit time for the user.
+ */
+function timestampUser() {
+    if (AuthData)
+        BaseRef.child('users').child(AuthData.uid).child('last').set(moment().toISOString());
+}
+
+/**
+ * Takes a UID and grabs their art text to set it as current.
+ * @param uid
+ */
+function setCurrentText(uid) {
+    BaseRef.child('artIs').child(uid).on('value', function (snap) {
+        CurrentText = {
+            text: snap.val().text,
+            x: 0,
+            dir: 1
+        }
+    });
+}
 
 /**
  * SOME ANGULAR STUFF AHEAD
@@ -26,6 +49,7 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
     $rootScope.getMode = function () {
         return Mode;
     };
+    $rootScope.setCurrentText = setCurrentText;
 
     /**
      * Save the auth token so we can remember this person for next time.
@@ -57,7 +81,7 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         $rootScope.Person = Person;
         Person.$loaded().then(function () {
             if (!Person.name) {
-                $rootScope.Display.getName = true;
+                $rootScope.Display.getBoth = true;
             }
         });
 
@@ -129,9 +153,14 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         Art = $firebaseObject(BaseRef.child('artIs').child(AuthData.uid));
         $rootScope.Art = Art;
         $rootScope.saveArt = function () {
+            timestampUser();
             Art.timestamp = moment().toISOString();
             Art.$save();
         };
+
+        // ONLINE
+        Online = $firebaseArray(BaseRef.child('users').orderByChild('last').startAt(moment().toISOString().slice(0, 15)));
+        $rootScope.Online = Online;
     }
 
     /**
@@ -269,17 +298,12 @@ function mouseClicked() {
             x: mouseX / windowWidth,
             y: mouseY / windowHeight,
             name: Person.name,
-            uid: AuthData.uid
+            uid: AuthData.uid,
+            timestamp: moment().toISOString()
         });
+        timestampUser();
     }
     else {
-        BaseRef.child('artIs').child(exists.uid).on('value', function (snap) {
-            console.log(snap.val());
-            CurrentText = {
-                text: snap.val().text,
-                x: 0,
-                dir: 1
-            }
-        });
+        setCurrentText(exists.uid);
     }
 }

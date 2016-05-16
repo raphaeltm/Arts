@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Art Potato</title>
+    <title>Art Is</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -39,7 +39,6 @@
         <input type="text" ng-model="Person.name">
         <input ng-if="Person.name" type="submit" value="I'll remember."/>
     </form>
-    {{getName}}
 </div>
 
 <div ng-if="Display.getArt" class="full-screen">
@@ -49,7 +48,19 @@
         <br>
         <input type="submit" value="That is what art means to me."/>
     </form>
-    {{getName}}
+</div>
+
+<div ng-if="Display.getBoth" class="full-screen">
+    <h1>This is about you. And art.</h1>
+    <form ng-submit="Display.getBoth = false; Person.$save(); saveArt();">
+        <p>What should I call you?</p>
+        <input type="text" ng-model="Person.name">
+        <br>
+        <p>What is does art mean for you and your life?</p>
+        <input type="text" ng-model="Art.text" style="width: 400px;">
+        <br>
+        <input type="submit" value="This."/>
+    </form>
 </div>
 
 <div id="artsy" ng-if="getMode() == 'web'">

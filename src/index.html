@@ -39,7 +39,6 @@
         <input type="text" ng-model="Person.name">
         <input ng-if="Person.name" type="submit" value="I'll remember."/>
     </form>
-    {{getName}}
 </div>
 
 <div ng-if="Display.getArt" class="full-screen">
@@ -49,7 +48,19 @@
         <br>
         <input type="submit" value="That is what art means to me."/>
     </form>
-    {{getName}}
+</div>
+
+<div ng-if="Display.getBoth" class="full-screen">
+    <h1>This is about you. And art.</h1>
+    <form ng-submit="Display.getBoth = false; Person.$save(); saveArt();">
+        <p>What should I call you?</p>
+        <input type="text" ng-model="Person.name">
+        <br>
+        <p>What is does art mean for you and your life?</p>
+        <input type="text" ng-model="Art.text" style="width: 400px;">
+        <br>
+        <input type="submit" value="This."/>
+    </form>
 </div>
 
 <div id="artsy" ng-if="getMode() == 'web'">
@@ -57,10 +68,8 @@
         What does <span class="clicky" ng-click="Display.getArt = true;">art mean</span> in your life, <span
             class="clicky"
             ng-click="Display.getName = true;">{{Person.name}}</span>?<br>
-        <!--<small id="timeleft">-->
-            <!--{{seconds|number}} seconds left until your answer is sealed-->
-        <!--</small>-->
     </h1>
+    <h4 id="online">Online: <span ng-repeat="user in Online" ng-click="setCurrentText(user.$id)">{{user.name}}</span></h4>
 </div>
 
 </body>
