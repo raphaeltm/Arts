@@ -1,0 +1,33 @@
+{
+  "rules":{
+    ".write":"false",
+    ".read":"false",
+    "users": {
+      ".write":"false",
+      ".read":"true",
+      "$user": {
+        ".write":"(((auth.uid==$user&&newData.child('name').val().length<=140&&(!newData.child('name').exists()||newData.child('name').isString())&&(auth.uid!==null||auth.uid==$user))))",
+        ".read":"true",
+        "name": {
+          ".write":"(((auth.uid==$user&&newData.val().length<=140&&(!newData.exists()||newData.isString())&&(auth.uid!==null||auth.uid==$user))))",
+          ".read":"true"
+        },
+        "$other":{".validate":"false"}
+      }
+    },
+    "clicks": {
+      ".write":"false",
+      ".read":"true",
+      "$click": {
+        ".write":"(((newData.exists()&&!data.exists()&&newData.child('message').val().length<=140&&(!newData.child('message').exists()||newData.child('message').isString())&&auth.uid!==null)))",
+        ".read":"true",
+        "message": {
+          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&newData.val().length<=140&&(!newData.exists()||newData.isString())&&auth.uid!==null)))",
+          ".read":"true"
+        },
+        "$other":{".validate":"false"}
+      }
+    },
+    "$other":{".validate":"false"}
+  }
+}

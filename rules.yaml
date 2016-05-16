@@ -1,0 +1,31 @@
+schema:
+  type: object
+  properties:
+    users:
+      $user:
+        properties:
+          name:
+            type: string
+            constraint: next.val().length <= 140
+        constraint: auth.uid == $user
+        additionalProperties: false
+    clicks:
+      $click:
+        properties:
+          message:
+            type: string
+            constraint: next.val().length <= 140
+        constraint: next.exists() && !prev.exists()
+        additionalProperties: false
+  additionalProperties: false
+
+access:
+  - location: clicks/
+    write: auth.uid !== null
+    read: true
+  - location: users/
+    write: auth.uid !== null
+    read: true
+  - location: users/$user/
+    write: auth.uid == $user
+    read: true

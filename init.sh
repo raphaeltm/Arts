@@ -6,7 +6,7 @@ printf "${GREEN}Loading stored vars...\n${NORMAL}"
 printf "${RED}Emptying vars.txt...\n${NORMAL}"
 truncate -s 0 vars.txt
 
-declare -a VARS=("DOMAIN" "S3_BUCKET" "FIREBASE_URL" "AWS_PROFILE")
+declare -a VARS=("DOMAIN" "S3_BUCKET" "AWS_PROFILE" "FIREBASE_URL" "FIREBASE_SECRET")
 
 printf "${BLUE}\n\nWe're about to ask you for a bunch of settings. \n If there is a default value, just hit enter to keep it!\n\n${NORMAL}"
 
