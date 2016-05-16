@@ -37,7 +37,7 @@
     <h5 ng-if="Person.name">Ok, {{Person.name}}.</h5>
     <form ng-submit="Display.getName = false; Person.$save()">
         <input type="text" ng-model="Person.name">
-        <input ng-if="Person.name" type="submit" value="I'll remember."/>
+        <input ng-if="Person.name" type="submit" value="I'll remember." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 
@@ -46,7 +46,7 @@
     <form ng-submit="Display.getArt = false; saveArt()">
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
-        <input type="submit" value="That is what art means to me."/>
+        <input type="submit" value="That is what art means to me." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 
@@ -59,7 +59,7 @@
         <p>What is does art mean for you and your life?</p>
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
-        <input type="submit" value="This."/>
+        <input type="submit" value="This." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 

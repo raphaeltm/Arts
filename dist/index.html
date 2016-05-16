@@ -59,7 +59,7 @@
         <p>What is does art mean for you and your life?</p>
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
-        <input type="submit" value="This."/>
+        <input type="submit" value="This." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 

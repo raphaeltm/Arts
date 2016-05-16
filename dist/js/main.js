@@ -1,6 +1,6 @@
 var BaseRef = new Firebase(ENV.firebaseURL);
 var ClickRef = BaseRef.child('clicks');
-var Clicks = [];
+var Users = [];
 var AuthData = null;
 var Person = null;
 var Art = null;
@@ -86,7 +86,7 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         });
 
         // CLICK STUFF
-        var ClickClass = $firebaseObject.$extend({
+        var UserClass = $firebaseObject.$extend({
             /**
              * X pos on the screen (as opposed to the relative position which is stored in Firebase.
              * @returns {number}
@@ -129,25 +129,16 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
          * Firebase array full of ClickClass objects.
          * @type {Function}
          */
-        var ClickArray = $firebaseArray.$extend({
+        var UserArray = $firebaseArray.$extend({
             $$added: function (snap) {
-                return new ClickClass(snap.ref());
+                if(!snap.val().x){
+                    snap.ref().child('x').set(Math.random());
+                    snap.ref().child('y').set(Math.random());
+                }
+                return new UserClass(snap.ref());
             }
         });
-        Clicks = new ClickArray(BaseRef.child('clicks').orderByKey().limitToLast(60));
-
-        // TIME STUFF
-        $rootScope.userTime = $firebaseObject(BaseRef.child('baseTimes').child(AuthData.uid));
-        $rootScope.userTime.$loaded().then(function () {
-            if (!$rootScope.userTime.time) {
-                $rootScope.userTime.time = moment().add(7, 'days').toISOString();
-                $rootScope.userTime.$save();
-            }
-            $interval(function () {
-                $rootScope.timeLeft = moment.duration(moment($rootScope.userTime.time).diff(moment())).humanize();
-                $rootScope.seconds = Math.floor(moment($rootScope.userTime.time).diff(moment()) / 1000);
-            }, 250);
-        });
+        Users = new UserArray(BaseRef.child('users').orderByChild('last').limitToLast(1000));
 
         // ART IS???
         Art = $firebaseObject(BaseRef.child('artIs').child(AuthData.uid));
@@ -214,8 +205,8 @@ function setup() {
  * @param cb
  */
 function clickLoop(cb) {
-    for (var i = 0; i < Clicks.length; i++) {
-        cb(Clicks[i]);
+    for (var i = 0; i < Users.length; i++) {
+        cb(Users[i]);
     }
 }
 
@@ -257,7 +248,8 @@ function web() {
         noStroke();
         fill(100);
         textSize(12);
-        var t = text(click.name, click.$x() - 5, click.$y() + 5);
+        if(click.name)
+            var t = text(click.name, click.$x() - 5, click.$y() + 5);
 
         if (click.dist(mouseX, mouseY) < 20) {
             cursor(HAND);
@@ -294,16 +286,13 @@ function mouseClicked() {
         }
     });
     if (exists === null) {
-        ClickRef.push({
+        BaseRef.child('users').child(AuthData.uid).update({
             x: mouseX / windowWidth,
-            y: mouseY / windowHeight,
-            name: Person.name,
-            uid: AuthData.uid,
-            timestamp: moment().toISOString()
+            y: mouseY / windowHeight
         });
         timestampUser();
     }
     else {
-        setCurrentText(exists.uid);
+        setCurrentText(exists.$id);
     }
 }
