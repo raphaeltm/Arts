@@ -25,6 +25,8 @@ What you'll need to run this for cheap on your own domain (only cost being your 
 - The [Blaze Compiler](https://github.com/firebase/blaze_compiler).
   - You can install it with `npm install -g blaze_compiler`
 
+- The [AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html)
+
 ---
 
 Initialize the project by running
