@@ -12,9 +12,8 @@ schema:
     clicks:
       $click:
         properties:
-          message:
-            type: string
-            constraint: next.val().length <= 140
+          x: {type: number}
+          y: {type: number}
         constraint: next.exists() && !prev.exists()
         additionalProperties: false
   additionalProperties: false

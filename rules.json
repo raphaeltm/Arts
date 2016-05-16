@@ -19,10 +19,14 @@
       ".write":"false",
       ".read":"true",
       "$click": {
-        ".write":"(((newData.exists()&&!data.exists()&&newData.child('message').val().length<=140&&(!newData.child('message').exists()||newData.child('message').isString())&&auth.uid!==null)))",
+        ".write":"(((newData.exists()&&!data.exists()&&(!newData.child('x').exists()||newData.child('x').isNumber())&&(!newData.child('y').exists()||newData.child('y').isNumber())&&auth.uid!==null)))",
         ".read":"true",
-        "message": {
-          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&newData.val().length<=140&&(!newData.exists()||newData.isString())&&auth.uid!==null)))",
+        "x": {
+          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&(!newData.exists()||newData.isNumber())&&auth.uid!==null)))",
+          ".read":"true"
+        },
+        "y": {
+          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&(!newData.exists()||newData.isNumber())&&auth.uid!==null)))",
           ".read":"true"
         },
         "$other":{".validate":"false"}

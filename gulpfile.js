@@ -178,13 +178,16 @@ gulp.task('archive', function (done) {
 
 gulp.task('build', function (done) {
     runSequence(
-        ['clean', 'lint:js'],
+        [
+            'clean',
+            // 'lint:js'
+        ],
         'copy',
     done);
 });
 
 gulp.task('serve', function(done){
-    runSequence('serve:serve', 'serve:open', done)
+    runSequence('serve:serve', 'serve:open', done);
 });
 
 gulp.task('default', ['build']);
