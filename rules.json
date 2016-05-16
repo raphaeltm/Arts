@@ -19,7 +19,7 @@
       ".write":"false",
       ".read":"true",
       "$user": {
-        ".write":"(((auth.uid==$user&&(!newData.child('name').exists()||newData.child('name').isString())&&(!newData.child('last').exists()||newData.child('last').isString()))))",
+        ".write":"(((auth.uid==$user&&(!newData.child('name').exists()||newData.child('name').isString())&&(!newData.child('last').exists()||newData.child('last').isString())&&(!newData.child('x').exists()||newData.child('x').isNumber())&&(!newData.child('y').exists()||newData.child('y').isNumber()))))",
         ".read":"true",
         "name": {
           ".write":"(((auth.uid==$user&&(!newData.exists()||newData.isString()))))",
@@ -27,6 +27,14 @@
         },
         "last": {
           ".write":"(((auth.uid==$user&&(!newData.exists()||newData.isString()))))",
+          ".read":"true"
+        },
+        "x": {
+          ".write":"((((!newData.exists()||newData.isNumber()))))",
+          ".read":"true"
+        },
+        "y": {
+          ".write":"((((!newData.exists()||newData.isNumber()))))",
           ".read":"true"
         },
         "$other":{".validate":"false"}

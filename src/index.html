@@ -69,7 +69,7 @@
             class="clicky"
             ng-click="Display.getName = true;">{{Person.name}}</span>?<br>
     </h1>
-    <h4 id="online">Online: <span ng-repeat="user in Online" ng-click="setCurrentText(user.$id)">{{user.name}}</span></h4>
+    <h4 id="online">Online: <span ng-repeat="user in Online" ng-click="setCurrentText(user.$id)"><span class="username">{{user.name}}</span>, </span></h4>
 </div>
 
 </body>

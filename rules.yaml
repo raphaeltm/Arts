@@ -12,9 +12,14 @@ schema:
         properties:
           name:
             type: string
+            constraint: auth.uid == $user
           last:
             type: string
-        constraint: auth.uid == $user
+            constraint: auth.uid == $user
+          x:
+            type: number
+          y:
+            type: number
         additionalProperties: false
       indexOn: [last]
     artIs:
@@ -56,6 +61,12 @@ access:
     read: true
   - location: users/$user/
     write: auth.uid == $user
+    read: true
+  - location: users/$user/x
+    write: true
+    read: true
+  - location: users/$user/y
+    write: true
     read: true
   - location: artIs/
     read: true

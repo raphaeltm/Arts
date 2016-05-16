@@ -131,10 +131,14 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
          */
         var ClickArray = $firebaseArray.$extend({
             $$added: function (snap) {
+                if(!snap.val().x){
+                    snap.ref().child('x').set(Math.random());
+                    snap.ref().child('y').set(Math.random());
+                }
                 return new ClickClass(snap.ref());
             }
         });
-        Clicks = new ClickArray(BaseRef.child('clicks').orderByKey().limitToLast(60));
+        Clicks = new ClickArray(BaseRef.child('users').orderByChild('last').limitToLast(1000));
 
         // TIME STUFF
         $rootScope.userTime = $firebaseObject(BaseRef.child('baseTimes').child(AuthData.uid));
@@ -257,8 +261,9 @@ function web() {
         noStroke();
         fill(100);
         textSize(12);
-        var t = text(click.name, click.$x() - 5, click.$y() + 5);
-
+        if(click.name)
+            var t = text(click.name, click.$x() - 5, click.$y() + 5);
+    
         if (click.dist(mouseX, mouseY) < 20) {
             cursor(HAND);
         }
@@ -301,9 +306,13 @@ function mouseClicked() {
             uid: AuthData.uid,
             timestamp: moment().toISOString()
         });
+        BaseRef.child('users').child(AuthData.uid).update({
+            x: mouseX / windowWidth,
+            y: mouseY / windowHeight
+        });
         timestampUser();
     }
     else {
-        setCurrentText(exists.uid);
+        setCurrentText(exists.$id);
     }
 }

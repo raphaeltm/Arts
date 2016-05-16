@@ -64,3 +64,14 @@ input[type=submit] {
   background: white;
   margin: 10px;
 }
+
+#online {
+  display: inline-block;
+  background: rgba(255,255,255, 0.8);
+  padding: 10px;
+  .username {
+    cursor: pointer;
+    font-weight: 400;
+    text-decoration: underline;;
+  }
+}
