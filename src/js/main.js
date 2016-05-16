@@ -273,7 +273,7 @@ function mouseClicked() {
         });
     }
     else {
-        BaseRef.child('artIs').child(AuthData.uid).on('value', function (snap) {
+        BaseRef.child('artIs').child(exists.uid).on('value', function (snap) {
             console.log(snap.val());
             CurrentText = {
                 text: snap.val().text,

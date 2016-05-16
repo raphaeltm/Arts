@@ -68,20 +68,20 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
              * @returns {number}
              */
             $x: function () {
-                if(!this.xsine){
+                if (!this.xsine) {
                     this.xsine = Math.random() * 100;
                 }
-                return this.x * windowWidth + (Math.sin((frameCount+this.xsine) / 25) * 10);
+                return this.x * windowWidth + (Math.sin((frameCount + this.xsine) / 25) * 10);
             },
             /**
              * Y pos on the screen (as opposed to the relative position which is stored in Firebase.
              * @returns {number}
              */
             $y: function () {
-                if(!this.ysine){
+                if (!this.ysine) {
                     this.ysine = Math.random() * 100;
                 }
-                return this.y * windowHeight + (Math.sin((frameCount+this.ysine) / 25) * 10);
+                return this.y * windowHeight + (Math.sin((frameCount + this.ysine) / 25) * 10);
             },
             /**
              * Get the distance between either another Click object, or x/y coordinates.
@@ -213,6 +213,7 @@ function drawConnections(c, thresh) {
  */
 function web() {
     clear();
+    cursor(ARROW);
     textFont('Lato');
     clickLoop(function (click) {
         var thresh = windowWidth + windowHeight;
@@ -228,6 +229,10 @@ function web() {
         fill(100);
         textSize(12);
         var t = text(click.name, click.$x() - 5, click.$y() + 5);
+
+        if (click.dist(mouseX, mouseY) < 20) {
+            cursor(HAND);
+        }
     });
     if (CurrentText) {
         fill(0);
@@ -235,8 +240,8 @@ function web() {
         textSize(50);
         var tW = textWidth(CurrentText.text);
         text(CurrentText.text, windowWidth - CurrentText.x, windowHeight / 2 - 20);
-        CurrentText.x+=4;
-        if(CurrentText.x > tW + windowWidth){
+        CurrentText.x += 4;
+        if (CurrentText.x > tW + windowWidth) {
             CurrentText.x = -10;
         }
     }
@@ -255,7 +260,7 @@ function draw() {
 function mouseClicked() {
     var exists = null;
     clickLoop(function (c) {
-        if (c.dist(mouseX, mouseY) < 30) {
+        if (c.dist(mouseX, mouseY) < 20) {
             exists = c;
         }
     });
@@ -268,7 +273,7 @@ function mouseClicked() {
         });
     }
     else {
-        BaseRef.child('artIs').child(AuthData.uid).on('value', function (snap) {
+        BaseRef.child('artIs').child(exists.uid).on('value', function (snap) {
             console.log(snap.val());
             CurrentText = {
                 text: snap.val().text,
