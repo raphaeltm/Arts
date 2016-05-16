@@ -2,14 +2,47 @@
   "rules":{
     ".write":"false",
     ".read":"false",
+    "baseTimes": {
+      ".write":"false",
+      ".read":"false",
+      "$user": {
+        ".write":"(((newData.child('time').val().length<=140&&newData.child('time').exists()&&!data.child('time').exists()&&(!newData.child('time').exists()||newData.child('time').isString())&&auth.uid==$user)))",
+        ".read":"true",
+        "time": {
+          ".write":"(((newData.val().length<=140&&newData.exists()&&!data.exists()&&(!newData.exists()||newData.isString())&&auth.uid==$user)))",
+          ".read":"true"
+        }
+      }
+    },
     "users": {
       ".write":"false",
       ".read":"true",
       "$user": {
-        ".write":"(((auth.uid==$user&&newData.child('name').val().length<=140&&(!newData.child('name').exists()||newData.child('name').isString())&&(auth.uid!==null||auth.uid==$user))))",
+        ".write":"(((auth.uid==$user&&(!newData.child('name').exists()||newData.child('name').isString())&&(!newData.child('last').exists()||newData.child('last').isString()))))",
         ".read":"true",
         "name": {
-          ".write":"(((auth.uid==$user&&newData.val().length<=140&&(!newData.exists()||newData.isString())&&(auth.uid!==null||auth.uid==$user))))",
+          ".write":"(((auth.uid==$user&&(!newData.exists()||newData.isString()))))",
+          ".read":"true"
+        },
+        "last": {
+          ".write":"(((auth.uid==$user&&(!newData.exists()||newData.isString()))))",
+          ".read":"true"
+        },
+        "$other":{".validate":"false"}
+      }
+    },
+    "artIs": {
+      ".write":"false",
+      ".read":"true",
+      "$user": {
+        ".write":"(((newData.child('text').val().length<5000&&(!newData.child('text').exists()||newData.child('text').isString())&&newData.child('timestamp').val().length<140&&(!newData.child('timestamp').exists()||newData.child('timestamp').isString())&&$user===auth.uid)))",
+        ".read":"true",
+        "text": {
+          ".write":"(((newData.val().length<5000&&(!newData.exists()||newData.isString())&&$user===auth.uid)))",
+          ".read":"true"
+        },
+        "timestamp": {
+          ".write":"(((newData.val().length<140&&(!newData.exists()||newData.isString())&&$user===auth.uid)))",
           ".read":"true"
         },
         "$other":{".validate":"false"}
@@ -19,7 +52,7 @@
       ".write":"false",
       ".read":"true",
       "$click": {
-        ".write":"(((newData.exists()&&!data.exists()&&(!newData.child('x').exists()||newData.child('x').isNumber())&&(!newData.child('y').exists()||newData.child('y').isNumber())&&auth.uid!==null)))",
+        ".write":"(((newData.exists()&&!data.exists()&&(!newData.child('x').exists()||newData.child('x').isNumber())&&(!newData.child('y').exists()||newData.child('y').isNumber())&&newData.child('name').val().length<=140&&(!newData.child('name').exists()||newData.child('name').isString())&&newData.child('uid').val().length<=140&&newData.child('uid').val()===auth.uid&&(!newData.child('uid').exists()||newData.child('uid').isString())&&auth.uid!==null)))",
         ".read":"true",
         "x": {
           ".write":"(((newData.parent().exists()&&!data.parent().exists()&&(!newData.exists()||newData.isNumber())&&auth.uid!==null)))",
@@ -27,6 +60,14 @@
         },
         "y": {
           ".write":"(((newData.parent().exists()&&!data.parent().exists()&&(!newData.exists()||newData.isNumber())&&auth.uid!==null)))",
+          ".read":"true"
+        },
+        "name": {
+          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&newData.val().length<=140&&(!newData.exists()||newData.isString())&&auth.uid!==null)))",
+          ".read":"true"
+        },
+        "uid": {
+          ".write":"(((newData.parent().exists()&&!data.parent().exists()&&newData.val().length<=140&&newData.val()===auth.uid&&(!newData.exists()||newData.isString())&&auth.uid!==null)))",
           ".read":"true"
         },
         "$other":{".validate":"false"}

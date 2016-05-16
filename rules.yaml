@@ -1,30 +1,61 @@
 schema:
   type: object
   properties:
+    baseTimes:
+      $user:
+        properties:
+          time:
+            type: string
+            constraint: next.val().length <= 140 && (next.exists() && !prev.exists())
     users:
       $user:
         properties:
           name:
             type: string
-            constraint: next.val().length <= 140
+          last:
+            type: string
         constraint: auth.uid == $user
+        additionalProperties: false
+    artIs:
+      $user:
+        properties:
+          text:
+            type: string
+            constraint: next.val().length < 5000
+          timestamp:
+            type: string
+            constraint: next.val().length < 140
         additionalProperties: false
     clicks:
       $click:
         properties:
           x: {type: number}
           y: {type: number}
+          name:
+            type: string
+            constraint: next.val().length <= 140
+          uid:
+            type: string
+            constraint: next.val().length <= 140 && next.val() === auth.uid
         constraint: next.exists() && !prev.exists()
         additionalProperties: false
   additionalProperties: false
 
 access:
+  - location: baseTimes/$user/
+    read: true
+    write: auth.uid == $user
   - location: clicks/
     write: auth.uid !== null
     read: true
   - location: users/
-    write: auth.uid !== null
+    write: false
     read: true
   - location: users/$user/
     write: auth.uid == $user
     read: true
+  - location: artIs/
+    read: true
+  - location: artIs/$user/
+    read: true
+    write: $user === auth.uid

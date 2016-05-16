@@ -1,3 +1,52 @@
 body, html {
-  font-family: 'Righteous', sans-serif;
+  font-family: 'Lato', sans-serif;
+  text-align: center;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+#defaultCanvas0 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  //pointer-events: none;
+}
+
+#artsy {
+  position: relative;
+  z-index: 500;
+}
+
+h1 {
+  font-size: 50px;
+  font-weight: 300;
+  cursor: default;
+}
+
+.clicky {
+  text-decoration: underline;
+  color: #555555;
+  cursor: pointer;
+}
+
+.full-screen {
+  background: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1999;
+}
+
+#timeleft {
+  font-size: 16px;
+  font-weight: 400;
+  background: white;
 }

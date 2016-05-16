@@ -9,7 +9,7 @@
 
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
-    <link href='https://fonts.googleapis.com/css?family=Righteous' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/app.css">
@@ -25,13 +25,43 @@
 <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angularFire/1.2.0/angularfire.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/angularFire/1.2.0/angularfire.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.0/p5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 <script type="text/javascript" src="environment.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 
+<div ng-if="Display.getName" class="full-screen">
+    <h1>What should I call you?</h1>
+    <h5 ng-if="Person.name">Ok, {{Person.name}}.</h5>
+    <form ng-submit="Display.getName = false; Person.$save()">
+        <input type="text" ng-model="Person.name">
+        <input ng-if="Person.name" type="submit" value="I'll remember."/>
+    </form>
+    {{getName}}
+</div>
 
-<h1>Art Potato</h1>
+<div ng-if="Display.getArt" class="full-screen">
+    <h1>What does art mean for you and your life, {{Person.name}}?</h1>
+    <form ng-submit="Display.getArt = false; saveArt()">
+        <input type="text" ng-model="Art.text" style="width: 400px;">
+        <br>
+        <input type="submit" value="That is what art means to me."/>
+    </form>
+    {{getName}}
+</div>
+
+<div id="artsy">
+    <h1>
+        What does <span class="clicky" ng-click="Display.getArt = true;">art mean</span> in your life, <span
+            class="clicky"
+            ng-click="Display.getName = true;">{{Person.name}}</span>?<br>
+        <!--<small id="timeleft">-->
+            <!--{{seconds|number}} seconds left until your answer is sealed-->
+        <!--</small>-->
+    </h1>
+</div>
 
 </body>
 </html>
