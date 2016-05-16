@@ -7,6 +7,8 @@ var Art = null;
 
 var Mode = 'web';
 
+var CurrentText = null;
+
 /**
  * SOME ANGULAR STUFF AHEAD
  */
@@ -14,6 +16,10 @@ var Mode = 'web';
 var ArtPotato = angular.module('ArtPotato', [
     'firebase'
 ]);
+
+/**
+ * All this because I'd rather use the AngularFire stuff than straight up Firebase.
+ */
 ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) {
     $rootScope.Display = {};
     $rootScope.moment = moment;
@@ -21,14 +27,26 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         return Mode;
     };
 
+    /**
+     * Save the auth token so we can remember this person for next time.
+     * @param token
+     */
     function saveAuth(token) {
         sessionStorage.token = token;
     }
 
+    /**
+     * Load the auth token so we can authenticate the person we have remembered.
+     * @returns {*|null}
+     */
     function loadAuth() {
         return sessionStorage.token || null;
     }
 
+    /**
+     * This is what we do once the person is authed.
+     * @param authData
+     */
     function success(authData) {
         saveAuth(authData.token);
         AuthData = authData;
@@ -45,12 +63,32 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
 
         // CLICK STUFF
         var ClickClass = $firebaseObject.$extend({
+            /**
+             * X pos on the screen (as opposed to the relative position which is stored in Firebase.
+             * @returns {number}
+             */
             $x: function () {
-                return this.x * windowWidth;
+                if (!this.xsine) {
+                    this.xsine = Math.random() * 100;
+                }
+                return this.x * windowWidth + (Math.sin((frameCount + this.xsine) / 25) * 10);
             },
+            /**
+             * Y pos on the screen (as opposed to the relative position which is stored in Firebase.
+             * @returns {number}
+             */
             $y: function () {
-                return this.y * windowHeight;
+                if (!this.ysine) {
+                    this.ysine = Math.random() * 100;
+                }
+                return this.y * windowHeight + (Math.sin((frameCount + this.ysine) / 25) * 10);
             },
+            /**
+             * Get the distance between either another Click object, or x/y coordinates.
+             * @param c
+             * @param y
+             * @returns {number}
+             */
             dist: function (c, y) {
                 var x;
                 if (typeof c === "number" && typeof y == "number") {
@@ -63,12 +101,13 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
                 return Math.sqrt(Math.pow(this.$x() - x, 2) + Math.pow(this.$y() - y, 2))
             }
         });
+        /**
+         * Firebase array full of ClickClass objects.
+         * @type {Function}
+         */
         var ClickArray = $firebaseArray.$extend({
             $$added: function (snap) {
                 return new ClickClass(snap.ref());
-            },
-            $$updated: function (snap) {
-                // return new ClickClass(this.$ref().child(snap.key()));
             }
         });
         Clicks = new ClickArray(BaseRef.child('clicks').orderByKey().limitToLast(60));
@@ -95,6 +134,9 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         };
     }
 
+    /**
+     * Auth anonymously and then run success function.
+     */
     function anonAuth() {
         BaseRef.authAnonymously(function (error, authData) {
             if (!error) {
@@ -103,8 +145,16 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
         })
     }
 
+    /**
+     * Load the auth token from last time.
+     * @type {*|null}
+     */
     var token = loadAuth();
 
+    /**
+     * If we have a token, we try to auth, if it fails, we run the anonAuth function, which will give us a new,
+     * valid token.
+     */
     if (token) {
         BaseRef.authWithCustomToken(token, function (error, authData) {
             if (!error) {
@@ -122,18 +172,29 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
 
 /**
  * P5JS STUFF AHEAD
+ * COOL VIZ TO FOLLOW!!!!
  */
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
 }
 
+/**
+ * Function to help us loop through the Click objects.
+ * Takes a callback to run against each Click.
+ * @param cb
+ */
 function clickLoop(cb) {
     for (var i = 0; i < Clicks.length; i++) {
         cb(Clicks[i]);
     }
 }
 
+/**
+ * Draw connections between Click objects. Takes a Click and a threshold distance in px.
+ * @param c
+ * @param thresh
+ */
 function drawConnections(c, thresh) {
     clickLoop(function (click) {
         if (click.$id === c.$id) {
@@ -147,8 +208,13 @@ function drawConnections(c, thresh) {
     })
 }
 
-function web(){
+/**
+ * Web function builds a web of click objects.
+ */
+function web() {
     clear();
+    cursor(ARROW);
+    textFont('Lato');
     clickLoop(function (click) {
         var thresh = windowWidth + windowHeight;
         thresh = thresh / 10;
@@ -161,18 +227,40 @@ function web(){
         ellipse(click.$x(), click.$y(), 40, 40);
         noStroke();
         fill(100);
+        textSize(12);
         var t = text(click.name, click.$x() - 5, click.$y() + 5);
+
+        if (click.dist(mouseX, mouseY) < 20) {
+            cursor(HAND);
+        }
     });
+    if (CurrentText) {
+        fill(0);
+        noStroke();
+        textSize(50);
+        var tW = textWidth(CurrentText.text);
+        text(CurrentText.text, windowWidth - CurrentText.x, windowHeight / 2 - 20);
+        CurrentText.x += 4;
+        if (CurrentText.x > tW + windowWidth) {
+            CurrentText.x = -10;
+        }
+    }
 }
 
+/**
+ * Draws whatever is defined in the current Mode function.
+ */
 function draw() {
     window[Mode]();
 }
 
+/**
+ * Pushes a new click up to the Firebase.
+ */
 function mouseClicked() {
     var exists = null;
     clickLoop(function (c) {
-        if (c.dist(mouseX, mouseY) < 30) {
+        if (c.dist(mouseX, mouseY) < 20) {
             exists = c;
         }
     });
@@ -185,6 +273,13 @@ function mouseClicked() {
         });
     }
     else {
-        console.log(exists.uid);
+        BaseRef.child('artIs').child(AuthData.uid).on('value', function (snap) {
+            console.log(snap.val());
+            CurrentText = {
+                text: snap.val().text,
+                x: 0,
+                dir: 1
+            }
+        });
     }
 }

@@ -43,7 +43,7 @@
 </div>
 
 <div ng-if="Display.getArt" class="full-screen">
-    <h1>What does art mean for you and your life, {{Person.name}}?</h1>
+    <h1>What does art mean in your life, {{Person.name}}?</h1>
     <form ng-submit="Display.getArt = false; saveArt()">
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
@@ -52,7 +52,7 @@
     {{getName}}
 </div>
 
-<div id="artsy">
+<div id="artsy" ng-if="getMode() == 'web'">
     <h1>
         What does <span class="clicky" ng-click="Display.getArt = true;">art mean</span> in your life, <span
             class="clicky"

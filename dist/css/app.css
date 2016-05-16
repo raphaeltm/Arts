@@ -49,4 +49,16 @@ h1 {
   font-weight: 400;
   background: white; }
 
+input[type=text] {
+  text-align: center;
+  padding: 10px; }
+
+input[type=submit] {
+  text-align: center;
+  padding: 10px;
+  border: solid black 1px;
+  border-radius: 5px;
+  background: white;
+  margin: 10px; }
+
 /*# sourceMappingURL=app.css.map */
