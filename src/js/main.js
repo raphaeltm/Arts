@@ -85,7 +85,7 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
             }
         });
 
-        // CLICK STUFF
+        // USER STUFF
         var UserClass = $firebaseObject.$extend({
             /**
              * X pos on the screen (as opposed to the relative position which is stored in Firebase.
@@ -108,12 +108,14 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
                 return this.y * windowHeight + (Math.sin((frameCount + this.ysine) / 25) * 10);
             },
             /**
-             * Get the distance between either another Click object, or x/y coordinates.
+             * Get the distance between either another User object, or x/y coordinates.
              * @param c
              * @param y
              * @returns {number}
              */
             dist: function (c, y) {
+                if (!c)
+                    return;
                 var x;
                 if (typeof c === "number" && typeof y == "number") {
                     x = c;
@@ -126,12 +128,12 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
             }
         });
         /**
-         * Firebase array full of ClickClass objects.
+         * Firebase array full of UserClass objects.
          * @type {Function}
          */
         var UserArray = $firebaseArray.$extend({
             $$added: function (snap) {
-                if(!snap.val().x){
+                if (!snap.val().x) {
                     snap.ref().child('x').set(Math.random());
                     snap.ref().child('y').set(Math.random());
                 }
@@ -151,6 +153,9 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
 
         // ONLINE
         Online = $firebaseArray(BaseRef.child('users').orderByChild('last').startAt(moment().toISOString().slice(0, 15)));
+        $interval(function(){
+            Online = $firebaseArray(BaseRef.child('users').orderByChild('last').startAt(moment().toISOString().slice(0, 15)));
+        }, 2000);
         $rootScope.Online = Online;
     }
 
@@ -195,63 +200,89 @@ ArtPotato.run(function ($firebaseArray, $firebaseObject, $rootScope, $interval) 
  * COOL VIZ TO FOLLOW!!!!
  */
 
+var drag = false;
+
+var winT;
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    winT = (windowWidth + windowHeight) / 8;
 }
 
 /**
- * Function to help us loop through the Click objects.
- * Takes a callback to run against each Click.
+ * Function to help us loop through the User objects.
+ * Takes a callback to run against each User.
  * @param cb
  */
-function clickLoop(cb) {
+function userLoop(cb) {
     for (var i = 0; i < Users.length; i++) {
         cb(Users[i]);
     }
 }
 
 /**
- * Draw connections between Click objects. Takes a Click and a threshold distance in px.
- * @param c
+ * Draw connections between User objects. Takes a User and a threshold distance in px.
+ * @param u
  * @param thresh
  */
-function drawConnections(c, thresh) {
-    clickLoop(function (click) {
-        if (click.$id === c.$id) {
+function drawConnections(u, thresh) {
+    userLoop(function (user) {
+        if (user.$id === u.$id) {
             return;
         }
-        if (c.dist(click) < thresh) {
-            stroke(150, 100);
+        if (u.dist(user) < thresh) {
+            stroke(100, 220, 250, 120);
             strokeWeight(1);
-            line(c.$x(), c.$y(), click.$x(), click.$y());
+            line(u.$x(), u.$y(), user.$x(), user.$y());
         }
     })
 }
 
 /**
- * Web function builds a web of click objects.
+ * Web function builds a web of User objects.
  */
 function web() {
+    if (AuthData)
+        var myNode = Users.$getRecord(AuthData.uid);
+    else
+        return;
     clear();
     cursor(ARROW);
     textFont('Lato');
-    clickLoop(function (click) {
-        var thresh = windowWidth + windowHeight;
-        thresh = thresh / 10;
-        drawConnections(click, thresh);
+    userLoop(function (user) {
+        if (AuthData && myNode && myNode.dist(user) < winT)
+            drawConnections(user, winT);
     });
-    clickLoop(function (click) {
+    userLoop(function (user) {
         fill(255, 255, 255);
-        stroke(150);
-        strokeWeight(1);
-        ellipse(click.$x(), click.$y(), 40, 40);
+        if (Online.$getRecord(user.$id) !== null) {
+            stroke(50, 150, 80);
+            strokeWeight(3);
+        }
+        else {
+            stroke(150);
+            strokeWeight(1);
+        }
+        if (AuthData && user.dist(myNode) < winT) {
+            var perc = (winT - user.dist(myNode)) / winT;
+            stroke(50 + 100 * perc, 100 + 100 * perc, 155 + 100 * perc);
+            strokeWeight(1 + 8 * perc);
+        }
+        if (user.$id === AuthData.uid) {
+            stroke(100, 240, 255);
+            strokeWeight(8 + Math.abs(Math.sin(frameCount / 30)) * 10);
+            if (drag) {
+                strokeWeight(10);
+            }
+        }
+        ellipse(user.$x(), user.$y(), 40, 40);
         noStroke();
         fill(100);
         textSize(12);
-        if(click.name)
-            var t = text(click.name, click.$x() - 5, click.$y() + 5);
+        if (user.name && AuthData && myNode && myNode.dist(user) < winT)
+            var t = text(user.name, user.$x() - 5, user.$y() + 5);
 
-        if (click.dist(mouseX, mouseY) < 20) {
+        if (user.dist(mouseX, mouseY) < 20 && (AuthData && myNode.dist(user) < winT)) {
             cursor(HAND);
         }
     });
@@ -263,7 +294,7 @@ function web() {
         text(CurrentText.text, windowWidth - CurrentText.x, windowHeight / 2 - 20);
         CurrentText.x += 4;
         if (CurrentText.x > tW + windowWidth) {
-            CurrentText.x = -10;
+            CurrentText = null;
         }
     }
 }
@@ -272,17 +303,24 @@ function web() {
  * Draws whatever is defined in the current Mode function.
  */
 function draw() {
+    if (!AuthData)
+        return;
     window[Mode]();
 }
 
 /**
- * Pushes a new click up to the Firebase.
+ * Pushes new user coordinates up to the Firebase.
  */
 function mouseClicked() {
+    if (!AuthData)
+        return;
+    if (AuthData)
+        var myNode = Users.$getRecord(AuthData.uid);
+
     var exists = null;
-    clickLoop(function (c) {
-        if (c.dist(mouseX, mouseY) < 20) {
-            exists = c;
+    userLoop(function (u) {
+        if (u.dist(mouseX, mouseY) < 20) {
+            exists = u;
         }
     });
     if (exists === null) {
@@ -293,6 +331,41 @@ function mouseClicked() {
         timestampUser();
     }
     else {
-        setCurrentText(exists.$id);
+        if (exists !== myNode && myNode.dist(exists) < winT) {
+            setCurrentText(exists.$id);
+        }
+    }
+}
+
+function mouseDragged() {
+    if (!AuthData)
+        return;
+    var user = null;
+    drag = true;
+    userLoop(function (u) {
+        if (u.dist(mouseX, mouseY) < 50 && u.$id === AuthData.uid) {
+            user = u;
+        }
+    });
+    if (!!user) {
+        user.x = mouseX / windowWidth;
+        user.y = mouseY / windowHeight;
+        BaseRef.child('users').child(AuthData.uid).update({
+            x: mouseX / windowWidth,
+            y: mouseY / windowHeight
+        });
+    }
+}
+
+function mouseReleased() {
+    if (!AuthData)
+        return;
+    if (drag) {
+        BaseRef.child('users').child(AuthData.uid).update({
+            x: mouseX / windowWidth,
+            y: mouseY / windowHeight
+        });
+        timestampUser();
+        drag = false;
     }
 }

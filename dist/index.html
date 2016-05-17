@@ -37,7 +37,7 @@
     <h5 ng-if="Person.name">Ok, {{Person.name}}.</h5>
     <form ng-submit="Display.getName = false; Person.$save()">
         <input type="text" ng-model="Person.name">
-        <input ng-if="Person.name" type="submit" value="I'll remember."/>
+        <input ng-if="Person.name" type="submit" value="I'll remember." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 
@@ -46,7 +46,7 @@
     <form ng-submit="Display.getArt = false; saveArt()">
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
-        <input type="submit" value="That is what art means to me."/>
+        <input type="submit" value="That is what art means to me." ng-click="$event.stopPropagation();"/>
     </form>
 </div>
 
@@ -56,7 +56,7 @@
         <p>What should I call you?</p>
         <input type="text" ng-model="Person.name">
         <br>
-        <p>What is does art mean for you and your life?</p>
+        <p>What does art mean for you and your life?</p>
         <input type="text" ng-model="Art.text" style="width: 400px;">
         <br>
         <input type="submit" value="This." ng-click="$event.stopPropagation();"/>
@@ -65,11 +65,11 @@
 
 <div id="artsy" ng-if="getMode() == 'web'">
     <h1>
-        What does <span class="clicky" ng-click="Display.getArt = true;">art mean</span> in your life, <span
+        What does <span class="clicky" ng-click="Display.getArt = true; $event.stopPropagation();">art mean</span> in your life, <span
             class="clicky"
-            ng-click="Display.getName = true;">{{Person.name}}</span>?<br>
+            ng-click="Display.getName = true; $event.stopPropagation();">{{Person.name}}</span>?<br>
     </h1>
-    <h4 id="online">Online: <span ng-repeat="user in Online" ng-click="setCurrentText(user.$id)"><span class="username">{{user.name}}</span>, </span></h4>
+    <h4 id="online">Online: <span ng-repeat="user in Online" ng-click="setCurrentText(user.$id); $event.stopPropagation();"><span class="username">{{user.name}}</span>, </span></h4>
 </div>
 
 </body>
